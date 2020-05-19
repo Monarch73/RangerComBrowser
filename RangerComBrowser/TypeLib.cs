@@ -8,7 +8,11 @@ using WaitHelpers = SeleniumExtras.WaitHelpers;
 
 namespace RangerComBrowser
 {
+#if BIT32
     [Guid("0CB1F887-683C-4AAF-B5A1-372246A8F348")]
+#else
+    [Guid("F466DD36-353C-47FA-8727-42EF8442F887")]
+#endif
     [ComVisible(true)]
     [InterfaceType(ComInterfaceType.InterfaceIsDual)]
     public interface ITypeLib
@@ -127,10 +131,14 @@ namespace RangerComBrowser
         /// <returns>true, if successfull, false on any error.</returns>
         bool WaitForUrl(string url);
     }
-
+#if BIT32
     [Guid("2C6E9D05-80EE-4B6E-8890-DADA381BDE45"), ClassInterface(ClassInterfaceType.None), ComSourceInterfaces(typeof(ITypeLib))]
-    [ComVisible(true)]
+    [ProgId("RangerComBrowser32.TypeLib")]
+#else
+    [Guid("43EED648-88B4-440E-9026-82004277CB42"), ClassInterface(ClassInterfaceType.None), ComSourceInterfaces(typeof(ITypeLib))]
     [ProgId("RangerComBrowser.TypeLib")]
+#endif
+    [ComVisible(true)]
     public class TypeLib : ITypeLib, IDisposable
     {
         private ChromeDriver driver;
@@ -299,7 +307,7 @@ namespace RangerComBrowser
             return 100;
         }
 
-        #region IDisposable Support
+#region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
@@ -334,7 +342,7 @@ namespace RangerComBrowser
             // TODO: uncomment the following line if the finalizer is overridden above.
             // GC.SuppressFinalize(this);
         }
-        #endregion
+#endregion
 
     }
 }
