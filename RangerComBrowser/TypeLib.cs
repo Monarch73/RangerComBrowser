@@ -67,6 +67,27 @@ namespace RangerComBrowser
         bool SendKeysToXPath(string xpath, string keys);
 
         /// <summary>
+        /// Simulates a mouseclick on an element identified by xpath.
+        /// </summary>
+        /// <param name="xpath">XPath of the element.</param>
+        /// <returns></returns>
+        bool SendClickToXPath(string xpath);
+
+        /// <summary>
+        /// Simulates a mouseclick on an element identified by Name.
+        /// </summary>
+        /// <param name="name">Name of the element.</param>
+        /// <returns></returns>
+        bool SendClickToName(string name);
+
+        /// <summary>
+        /// Simulates a mouseclick on an element identified by Id.
+        /// </summary>
+        /// <param name="id">Id of the element to send the mouseclick to.</param>
+        /// <returns></returns>
+        bool SendClickToId(string id);
+
+        /// <summary>
         /// Gets the Text-Property of element identified by Id.
         /// </summary>
         /// <param name="id">Id of the element.</param>
@@ -206,6 +227,39 @@ namespace RangerComBrowser
             if (this.driver != null)
             {
                 this.driver.FindElementByXPath(xpath).SendKeys(keys);
+                return true;
+            }
+
+            return false;
+        }
+        public bool SendClickToXPath(string xpath)
+        {
+            if (this.driver != null)
+            {
+                this.driver.FindElementByXPath(xpath).Click();
+                return true;
+            }
+
+            return false;
+
+        }
+
+        public bool SendClickToName(string name)
+        {
+            if (this.driver != null)
+            {
+                this.driver.FindElementByName(name).Click();
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool SendClickToId(string id)
+        {
+            if (this.driver != null)
+            {
+                this.driver.FindElementById(id).Click();
                 return true;
             }
 
