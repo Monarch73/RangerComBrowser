@@ -2,156 +2,14 @@
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using WaitHelpers = SeleniumExtras.WaitHelpers;
 
 
 namespace RangerComBrowser
 {
-#if BIT32
-    [Guid("0CB1F887-683C-4AAF-B5A1-372246A8F348")]
-#else
-    [Guid("F466DD36-353C-47FA-8727-42EF8442F887")]
-#endif
-    [ComVisible(true)]
-    [InterfaceType(ComInterfaceType.InterfaceIsDual)]
-    public interface ITypeLib
-    {
-        /// <summary>
-        /// Gets the Version Number
-        /// </summary>
-        /// <returns>Version times 100.</returns>
-        int GetVersion();
-
-        /// <summary>
-        /// Loads and displays the browser window.
-        /// </summary>
-        /// <returns>true if success, false if  browser is already loaded.</returns>
-        bool LoadBrowser();
-
-        /// <summary>
-        /// Unloads and hides the browser window.
-        /// </summary>
-        /// <returns>true, if browser was successfully unloaded.</returns>
-        bool UnloadBrowser();
-
-        /// <summary>
-        /// Requests browser to load url.
-        /// </summary>
-        /// <param name="url"></param>
-        /// <returns>true, if browser was loaded.</returns>
-        bool GoToUrl(string url);
-
-        /// <summary>
-        /// Emulates user input to control identified by Id.
-        /// </summary>
-        /// <param name="id">Id of the element.</param>
-        /// <param name="keys">userinput.</param>
-        /// <returns></returns>
-        bool SendKeysToId(string id, string keys);
-
-        /// <summary>
-        /// Emulates user input to control identified by Name.
-        /// </summary>
-        /// <param name="name">Name of the element.</param>
-        /// <param name="keys">Userinput.</param>
-        /// <returns></returns>
-        bool SendKeysToName(string name, string keys);
-
-        /// <summary>
-        /// Emulates user input to control identified by xpath.
-        /// </summary>
-        /// <param name="xpath">XPath of the element.</param>
-        /// <param name="keys">User input.</param>
-        /// <returns></returns>
-        bool SendKeysToXPath(string xpath, string keys);
-
-        /// <summary>
-        /// Simulates a mouseclick on an element identified by xpath.
-        /// </summary>
-        /// <param name="xpath">XPath of the element.</param>
-        /// <returns></returns>
-        bool SendClickToXPath(string xpath);
-
-        /// <summary>
-        /// Simulates a mouseclick on an element identified by Name.
-        /// </summary>
-        /// <param name="name">Name of the element.</param>
-        /// <returns></returns>
-        bool SendClickToName(string name);
-
-        /// <summary>
-        /// Simulates a mouseclick on an element identified by Id.
-        /// </summary>
-        /// <param name="id">Id of the element to send the mouseclick to.</param>
-        /// <returns></returns>
-        bool SendClickToId(string id);
-
-        /// <summary>
-        /// Gets the Text-Property of element identified by Id.
-        /// </summary>
-        /// <param name="id">Id of the element.</param>
-        /// <returns>Text of the element, null if element not found or browser not loaded.</returns>
-        string GetTextFromId(string id);
-
-        /// <summary>
-        /// Gets the text-property of the element identified by Name.
-        /// </summary>
-        /// <param name="name">Name of the element.</param>
-        /// <returns>Text of the element, null if element not found or browser not loaded.</returns>
-        string GetTextFromName(string name);
-
-        /// <summary>
-        /// Gets the text-property of the element identified by xpath.
-        /// </summary>
-        /// <param name="xpath">xpath of the element.</param>
-        /// <returns>Text of the element, null if element not found or browser not loaded.</returns>
-        string GetTextFromXPath(string xpath);
-
-        /// <summary>
-        /// Executes javascript in browser.
-        /// </summary>
-        /// <param name="script">Actual script.</param>
-        /// <param name="args">Arguments. Can be null if not used.</param>
-        /// <returns>Result of the javascript, null if no browser was loaded.</returns>
-        object ExecuteScript(string script, params object[] args);
-
-        /// <summary>
-        /// Waits and blocks execution until provided javascript returns specific result.
-        /// </summary>
-        /// <param name="script">javascript to execute.</param>
-        /// <param name="expectedResult">Expected result of the javascript.</param>
-        /// <returns></returns>
-        bool WaitForJavascript(string script, string expectedResult);
-
-        /// <summary>
-        /// Waits and blocks execution until element identified by id becomes available.
-        /// </summary>
-        /// <param name="id">Id of the element.</param>
-        /// <returns>true, if successfull, false on any error.</returns>
-        bool WaitForIdAvail(string id);
-
-        /// <summary>
-        /// Waits and blocks execution until element identified by Name becomes available.
-        /// </summary>
-        /// <param name="name">Name of the element.</param>
-        /// <returns>true, if successfull, false on any error.</returns>
-        bool WaitForNameAvail(string name);
-
-        /// <summary>
-        /// Waits and blocks execution until element identified by xpath becomes available.
-        /// </summary>
-        /// <param name="xpath">xpath of the element.</param>
-        /// <returns>true, if successfull, false on any error.</returns>
-        bool WaitForXPathAvail(string xpath);
-
-        /// <summary>
-        /// Waits and blocks execution until browser url matches regex expression
-        /// </summary>
-        /// <param name="url">Regex expression to be matched against browser url.</param>
-        /// <returns>true, if successfull, false on any error.</returns>
-        bool WaitForUrl(string url);
-    }
 #if BIT32
     [Guid("2C6E9D05-80EE-4B6E-8890-DADA381BDE45"), ClassInterface(ClassInterfaceType.None), ComSourceInterfaces(typeof(ITypeLib))]
     [ProgId("RangerComBrowser32.TypeLib")]
@@ -200,33 +58,48 @@ namespace RangerComBrowser
             return false;
         }
 
-        public bool SendKeysToId(string id, string keys)
+        public bool SendKeysToId(string id, string keys, bool sendEnter)
         {
             if (this.driver != null)
             {
-                this.driver.FindElementById(id).SendKeys(keys);
+                var element = this.driver.FindElementById(id);//.SendKeys(keys);
+                element.SendKeys(keys);
+                if (sendEnter)
+                {
+                    element.SendKeys(Keys.Enter);
+                }
                 return true;
             }
 
             return false;
         }
 
-        public bool SendKeysToName(string name, string keys)
+        public bool SendKeysToName(string name, string keys, bool sendEnter)
         {
             if (this.driver != null)
             {
-                this.driver.FindElementByName(name).SendKeys(keys);
+                var element = this.driver.FindElementByName(name); //.SendKeys(keys);
+                element.SendKeys(keys);
+                if (sendEnter)
+                {
+                    element.SendKeys(Keys.Enter);
+                }
                 return true;
             }
 
             return false;
         }
 
-        public bool SendKeysToXPath(string xpath, string keys)
+        public bool SendKeysToXPath(string xpath, string keys, bool sendEnter)
         {
             if (this.driver != null)
             {
-                this.driver.FindElementByXPath(xpath).SendKeys(keys);
+                var element = this.driver.FindElementByXPath(xpath);//.SendKeys(keys);
+                element.SendKeys(keys);
+                if (sendEnter)
+                {
+                    element.SendKeys(Keys.Enter);
+                }
                 return true;
             }
 
@@ -356,6 +229,107 @@ namespace RangerComBrowser
             return false;
         }
 
+        public bool SwitchTo(string windowName)
+        {
+            if (this.driver != null)
+            {
+                this.driver.SwitchTo().Window(windowName);
+                return true;
+            }
+            return false;
+        }
+
+        public string[] GetWindowNames()
+        {
+            if (this.driver != null)
+            {
+                return this.driver.WindowHandles.ToArray<string>();
+            }
+            return null;
+        }
+
+        public string GetWindowName()
+        {
+            if(this.driver != null)
+            {
+                return this.driver.CurrentWindowHandle;
+            }
+
+            return null;
+        }
+
+        public string GetWindowTitle()
+        {
+            if (this.driver != null)
+            {
+                return this.driver.Title;
+            }
+
+            return null;
+        }
+
+        public bool SwitchToTitle(string title)
+        {
+            if (this.driver != null)
+            {
+                var name = this.GetWindowTitle();
+                if (title != name)
+                {
+                    var names = this.GetWindowNames();
+                    foreach (var handle in names)
+                    {
+                        this.SwitchTo(handle);
+                        name = this.GetWindowTitle();
+                        if (name == title)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public bool CheckXPath(string xpath) => this.Check(By.XPath(xpath));
+
+        public bool CheckId(string id) => this.Check(By.Id(id));
+
+        public bool CheckName(string name) => this.Check(By.Name(name));
+
+        private bool Check(By by)
+        {
+            if (this.driver != null)
+            {
+                return this.driver.FindElements(by).Count != 0;
+            }
+
+            return false;
+        }
+
+        public WebItem[] GetItemsFromSelectByXPath(string xpath) => this.GetItemsFromSelect(By.XPath(xpath));
+        public WebItem[] GetItemsFromSelectByName(string name) => this.GetItemsFromSelect(By.Name(name)); 
+        public WebItem[] GetItemsFromSelectById(string id) => this.GetItemsFromSelect(By.Id(id));
+
+        private WebItem[] GetItemsFromSelect(By by)
+        {
+            if (this.driver != null)
+            {
+                var selectElement = this.driver.FindElement(by);
+                var select = new SelectElement(selectElement);
+                var options = new List<WebItem>();
+                int index = 0;
+                foreach (var option in select.Options)
+                {
+                    options.Add(new WebItem(index++, option.Text));
+                }
+
+                return options.ToArray();
+            }
+            return null;
+        }
+
+
         public int GetVersion()
         {
             return 100;
@@ -399,4 +373,5 @@ namespace RangerComBrowser
 #endregion
 
     }
+
 }
