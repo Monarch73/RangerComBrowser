@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using WaitHelpers = SeleniumExtras.WaitHelpers;
-
+using Newtonsoft.Json;
 
 namespace RangerComBrowser
 {
@@ -307,11 +307,11 @@ namespace RangerComBrowser
             return false;
         }
 
-        public WebItem[] GetItemsFromSelectByXPath(string xpath) => this.GetItemsFromSelect(By.XPath(xpath));
-        public WebItem[] GetItemsFromSelectByName(string name) => this.GetItemsFromSelect(By.Name(name)); 
-        public WebItem[] GetItemsFromSelectById(string id) => this.GetItemsFromSelect(By.Id(id));
+        public string GetItemsFromSelectByXPath(string xpath) => this.GetItemsFromSelect(By.XPath(xpath));
+        public string GetItemsFromSelectByName(string name) => this.GetItemsFromSelect(By.Name(name)); 
+        public string GetItemsFromSelectById(string id) => this.GetItemsFromSelect(By.Id(id));
 
-        private WebItem[] GetItemsFromSelect(By by)
+        private string GetItemsFromSelect(By by)
         {
             if (this.driver != null)
             {
@@ -321,12 +321,64 @@ namespace RangerComBrowser
                 int index = 0;
                 foreach (var option in select.Options)
                 {
-                    options.Add(new WebItem(index++, option.Text));
+                    options.Add(new WebItem(index++, option.Text, option.GetAttribute("value")));
                 }
 
-                return options.ToArray();
+                return JsonConvert.SerializeObject(options.ToArray());
             }
             return null;
+        }
+
+        public bool SelectOptionIndexByXpath(string xpath, int index) => this.SelectOptionIndex(By.XPath(xpath), index);
+        public bool SelectOptionIndexById(string id, int index) => this.SelectOptionIndex(By.Id(id), index);
+        public bool SelectOptionIndexByName(string name, int index) => this.SelectOptionIndex(By.Name(name), index);
+
+        public bool SelectOptionValueByXpath(string xpath, string value) => this.SelectOptionValue(By.XPath(xpath), value);
+        public bool SelectOptionValueById(string id, string value) => this.SelectOptionValue(By.Id(id), value);
+        public bool SelectOptionValueByName(string name, string value) => this.SelectOptionValue(By.Name(name), value);
+
+        public bool SelectOptionTextByXpath(string xpath, string text) => this.SelectOptionText(By.XPath(xpath), text);
+        public bool SelectOptionTextById(string id, string text) => this.SelectOptionText(By.Id(id), text);
+        public bool SelectOptionTextByName(string name, string text) => this.SelectOptionText(By.Name(name), text);
+
+        private bool SelectOptionText(By by, string text)
+        {
+            if (this.driver != null)
+            {
+                var selectElement = this.driver.FindElement(by);
+                var select = new SelectElement(selectElement);
+                select.SelectByText(text);
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool SelectOptionIndex(By by, int index)
+        {
+            if (this.driver != null)
+            {
+                var selectElement = this.driver.FindElement(by);
+                var select = new SelectElement(selectElement);
+                select.SelectByIndex(index);
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool SelectOptionValue(By by, string value)
+        {
+            if (this.driver != null)
+            {
+                var selectElement = this.driver.FindElement(by);
+                var select = new SelectElement(selectElement);
+                select.SelectByValue(value);
+                return true;
+            }
+
+            return false;
+
         }
 
 

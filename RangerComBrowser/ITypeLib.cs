@@ -209,11 +209,26 @@ namespace RangerComBrowser
         /// <returns>true, if name is found.</returns>
         bool CheckName(string name);
 
-        WebItem[] GetItemsFromSelectByXPath(string xpath);
+        /// <summary>
+        /// Gets a list of options from a select box. 
+        /// </summary>
+        /// <param name="xpath"></param>
+        /// <returns>json encoded array.</returns>
+        string GetItemsFromSelectByXPath(string xpath);
 
-        WebItem[] GetItemsFromSelectByName(string name);
+        string GetItemsFromSelectByName(string name);
 
-        WebItem[] GetItemsFromSelectById(string id);
+        string GetItemsFromSelectById(string id);
+
+        bool SelectOptionIndexByXpath(string xpath, int index);
+        bool SelectOptionIndexById(string id, int index);
+        bool SelectOptionIndexByName(string name, int index);
+        bool SelectOptionValueByXpath(string xpath, string value);
+        bool SelectOptionValueById(string id, string value);
+        bool SelectOptionValueByName(string name, string value);
+        bool SelectOptionTextByXpath(string xpath, string text);
+        bool SelectOptionTextById(string id, string text);
+        bool SelectOptionTextByName(string name, string text);
 
 
     }
